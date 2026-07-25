@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../utils/api';
 
@@ -13,13 +13,7 @@ const Tasks = () => {
   const [deadline, setDeadline] = useState('');
   const navigate = useNavigate();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    fetchTasks();
-    fetchProject();
-  }, []);
-
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const res = await api.get('/projects');
       const found = res.data.find(p => p.id === parseInt(projectId));
@@ -27,16 +21,21 @@ const Tasks = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [projectId]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const res = await api.get(`/projects/${projectId}/tasks`);
       setTasks(res.data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [projectId]);
+
+  useEffect(() => {
+    fetchTasks();
+    fetchProject();
+  }, [fetchTasks, fetchProject]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
