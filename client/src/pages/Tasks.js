@@ -13,6 +13,7 @@ const Tasks = () => {
   const [deadline, setDeadline] = useState('');
   const navigate = useNavigate();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchTasks();
     fetchProject();
@@ -68,12 +69,10 @@ const Tasks = () => {
   };
 
   const columns = ['To Do', 'In Progress', 'Done'];
-
   const priorityColor = (p) => p === 'High' ? '#ef4444' : p === 'Medium' ? '#f59e0b' : '#10b981';
 
   return (
     <div style={styles.container}>
-      {/* Sidebar */}
       <div style={styles.sidebar}>
         <h2 style={styles.logo}>⚡ DevTrack</h2>
         <nav>
@@ -81,11 +80,12 @@ const Tasks = () => {
           <p style={styles.navItem} onClick={() => navigate('/projects')}>📁 Projects</p>
           <p style={{ ...styles.navItem, ...styles.activeNav }}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
+          <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
+          <p style={styles.navItem} onClick={() => navigate('/ai-summary')}>🤖 AI Summary</p>
         </nav>
         <button style={styles.logoutBtn} onClick={() => { localStorage.clear(); navigate('/login'); }}>🚪 Logout</button>
       </div>
 
-      {/* Main */}
       <div style={styles.main}>
         <div style={styles.topBar}>
           <div>
@@ -98,7 +98,6 @@ const Tasks = () => {
           </div>
         </div>
 
-        {/* Create Form */}
         {showForm && (
           <div style={styles.formCard}>
             <h3 style={styles.formTitle}>Create New Task</h3>
@@ -121,7 +120,6 @@ const Tasks = () => {
           </div>
         )}
 
-        {/* Kanban Board */}
         <div style={styles.kanban}>
           {columns.map(col => (
             <div key={col} style={styles.column}>
