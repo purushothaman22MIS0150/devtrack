@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import api from '../utils/api';
+import Spinner from '../components/Spinner';
 
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -9,6 +10,7 @@ const Analytics = () => {
   const [projects, setProjects] = useState([]);
   const [logs, setLogs] = useState([]);
   const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,9 +32,11 @@ const Analytics = () => {
         const tasksRes = await api.get(`/projects/${project.id}/tasks`);
         allTasks.push(...tasksRes.data);
       }
-      setTasks(allTasks);
+          setTasks(allTasks);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,7 +64,13 @@ const Analytics = () => {
   ].filter(d => d.value > 0);
 
   const totalHours = logs.reduce((sum, log) => sum + parseFloat(log.hours), 0).toFixed(1);
-
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Spinner text="Loading analytics..." />
+      </div>
+    );
+  }
   return (
     <div style={styles.container}>
       {/* Sidebar */}
@@ -110,9 +120,9 @@ const Analytics = () => {
             ) : (
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={hoursPerDay}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" fontSize={12} />
-                  <YAxis fontSize={12} />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.12)" />
+                  <XAxis dataKey="date" fontSize={12} stroke="#a0a3c4" />
+                  <YAxis fontSize={12} stroke="#a0a3c4" />
                   <Tooltip />
                   <Bar dataKey="hours" fill="#4f46e5" radius={[4, 4, 0, 0]} />
                 </BarChart>

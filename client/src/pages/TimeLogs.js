@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
 
 const TimeLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -14,6 +15,7 @@ const TimeLogs = () => {
   const [note, setNote] = useState('');
   const [selectedProject, setSelectedProject] = useState('');
   const [timerTasks, setTimerTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
   const {
     timerRunning, setTimerRunning,
@@ -39,11 +41,15 @@ const TimeLogs = () => {
     if (timerProjectId) fetchTimerTasks(timerProjectId);
   }, [timerProjectId]);
 
-  const fetchLogs = async () => {
+    const fetchLogs = async () => {
     try {
       const res = await api.get('/timelogs');
       setLogs(res.data);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchProjects = async () => {
@@ -201,7 +207,9 @@ const TimeLogs = () => {
 
         <div style={styles.tableCard}>
           <h3 style={styles.tableTitle}>Recent Logs</h3>
-          {logs.length === 0 ? (
+                    {loading ? (
+            <Spinner text="Loading logs..." />
+          ) : logs.length === 0 ? (
             <p style={styles.empty}>No time logs yet. Start the timer or add a manual log!</p>
           ) : (
             <table style={styles.table}>

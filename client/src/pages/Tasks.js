@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../utils/api';
+import Spinner from '../components/Spinner';
 
 const Tasks = () => {
   const { projectId } = useParams();
@@ -11,6 +12,7 @@ const Tasks = () => {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('Medium');
   const [deadline, setDeadline] = useState('');
+    const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchProject = useCallback(async () => {
@@ -26,9 +28,11 @@ const Tasks = () => {
   const fetchTasks = useCallback(async () => {
     try {
       const res = await api.get(`/projects/${projectId}/tasks`);
-      setTasks(res.data);
+           setTasks(res.data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   }, [projectId]);
 
@@ -118,7 +122,8 @@ const Tasks = () => {
           </div>
         )}
 
-        <div style={styles.kanban}>
+                {loading && <Spinner text="Loading tasks..." />}
+        <div style={{ ...styles.kanban, display: loading ? 'none' : 'flex' }}>
           {columns.map(col => (
             <div key={col} style={styles.column}>
               <div style={styles.columnHeader}>

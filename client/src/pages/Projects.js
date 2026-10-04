@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import Spinner from '../components/Spinner';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -8,6 +9,7 @@ const Projects = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,9 +19,11 @@ const Projects = () => {
   const fetchProjects = async () => {
     try {
       const res = await api.get('/projects');
-      setProjects(res.data);
+        setProjects(res.data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,7 +89,9 @@ const Projects = () => {
 
         {/* Projects Grid */}
         <div style={styles.grid}>
-          {projects.length === 0 ? (
+                    {loading ? (
+            <Spinner text="Loading projects..." />
+          ) : projects.length === 0 ? (
             <p style={styles.empty}>No projects yet. Create your first one!</p>
           ) : (
             projects.map(project => (

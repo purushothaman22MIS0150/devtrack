@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../utils/api';
+import Spinner from '../components/Spinner';
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProjects();
@@ -21,8 +23,10 @@ const Dashboard = () => {
       const active = res.data.filter(p => p.status === 'Active').length;
       const completed = res.data.filter(p => p.status === 'Completed').length;
       setStats({ total, active, completed });
-    } catch (err) {
+       } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,7 +76,9 @@ const Dashboard = () => {
         {/* Recent Projects */}
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>Recent Projects</h2>
-          {projects.length === 0 ? (
+                    {loading ? (
+            <Spinner text="Loading projects..." />
+          ) : projects.length === 0 ? (
             <p style={styles.empty}>No projects yet. <span style={styles.link} onClick={() => navigate('/projects')}>Create one!</span></p>
           ) : (
             projects.slice(0, 5).map(project => (
