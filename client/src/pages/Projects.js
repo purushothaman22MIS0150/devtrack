@@ -10,6 +10,7 @@ const Projects = () => {
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
   const [loading, setLoading] = useState(true);
+    const [progress, setProgress] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +21,18 @@ const Projects = () => {
     try {
       const res = await api.get('/projects');
         setProjects(res.data);
+              const progressMap = {};
+      await Promise.all(res.data.map(async (p) => {
+        try {
+          const t = await api.get(`/projects/${p.id}/tasks`);
+          const total = t.data.length;
+          const done = t.data.filter(x => x.status === 'Done').length;
+          progressMap[p.id] = total === 0 ? 0 : Math.round((done / total) * 100);
+        } catch (e) {
+          progressMap[p.id] = 0;
+        }
+      }));
+      setProgress(progressMap);
     } catch (err) {
       console.error(err);
     } finally {
@@ -104,6 +117,10 @@ const Projects = () => {
                 </div>
                 <p style={styles.cardDesc}>{project.description}</p>
                 <p style={styles.cardDeadline}>📅 {project.deadline ? new Date(project.deadline).toDateString() : 'No deadline'}</p>
+                                <div style={styles.progressTrack}>
+                  <div style={{ ...styles.progressFill, width: `${progress[project.id] || 0}%` }}></div>
+                </div>
+                <p style={styles.progressText}>{progress[project.id] || 0}% complete</p>
                 <div style={styles.cardFooter}>
                   <button style={styles.viewBtn} onClick={() => navigate(`/projects/${project.id}/tasks`)}>View Tasks</button>
                   <button style={styles.deleteBtn} onClick={() => handleDelete(project.id)}>Delete</button>
@@ -150,6 +167,9 @@ const styles = {
   cardDesc: { color: '#a0a3c4', fontSize: '13px', marginBottom: '10px' },
   cardDeadline: { color: '#8b8fb5', fontSize: '12px', marginBottom: '15px' },
   cardFooter: { display: 'flex', gap: '10px' },
+    progressTrack: { width: '100%', height: '8px', backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: '10px', overflow: 'hidden', marginBottom: '6px' },
+  progressFill: { height: '100%', background: 'linear-gradient(90deg, #6366f1, #8b5cf6)', borderRadius: '10px', transition: 'width 0.6s ease' },
+  progressText: { color: '#a0a3c4', fontSize: '12px', marginBottom: '15px' },
   viewBtn: { flex: 1, backgroundColor: 'rgba(99,102,241,0.25)', color: '#c4c8ff', border: '1px solid rgba(99,102,241,0.4)', padding: '8px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' },
   deleteBtn: { flex: 1, backgroundColor: 'rgba(239,68,68,0.2)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.35)', padding: '8px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' },
   empty: { color: '#a0a3c4', textAlign: 'center', padding: '40px' }
