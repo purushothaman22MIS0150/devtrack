@@ -6,7 +6,6 @@ const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const timeLogRoutes = require('./routes/timeLogRoutes');
-const aiRoutes = require('./routes/aiRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const { checkDeadlines } = require('./controllers/emailController');
 
@@ -20,7 +19,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/projects', taskRoutes);
 app.use('/api/timelogs', timeLogRoutes);
-app.use('/api/ai', aiRoutes);
 app.use('/api/email', emailRoutes);
 
 // Test route
