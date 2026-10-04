@@ -58,7 +58,7 @@ Keep it friendly, concise and motivating.
     `;
 
     const completion = await groq.chat.completions.create({
-      model: 'qwen/qwen3-32b',
+      model: 'qwen-qwen3-32b',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 500,
     });
