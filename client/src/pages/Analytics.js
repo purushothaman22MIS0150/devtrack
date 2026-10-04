@@ -165,24 +165,31 @@ const Analytics = () => {
   );
 };
 
+const glass = {
+  backgroundColor: 'rgba(255, 255, 255, 0.07)',
+  backdropFilter: 'blur(14px)',
+  WebkitBackdropFilter: 'blur(14px)',
+  border: '1px solid rgba(255, 255, 255, 0.12)',
+};
+
 const styles = {
-  container: { display: 'flex', minHeight: '100vh', backgroundColor: '#f0f2f5', fontFamily: 'Segoe UI, sans-serif' },
-  sidebar: { width: '240px', backgroundColor: '#1e1b4b', padding: '30px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' },
+  container: { display: 'flex', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' },
+  sidebar: { ...glass, width: '240px', padding: '30px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderRadius: 0, borderTop: 'none', borderBottom: 'none', borderLeft: 'none' },
   logo: { color: '#fff', fontSize: '22px', marginBottom: '40px' },
-  navItem: { color: '#a5b4fc', padding: '12px 15px', borderRadius: '8px', cursor: 'pointer', marginBottom: '5px', fontSize: '15px' },
-  activeNav: { backgroundColor: '#4f46e5', color: '#fff' },
-  logoutBtn: { backgroundColor: '#f5576c', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' },
+  navItem: { color: '#c4c8ff', padding: '12px 15px', borderRadius: '10px', cursor: 'pointer', marginBottom: '5px', fontSize: '15px', transition: 'all 0.2s ease' },
+  activeNav: { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', boxShadow: '0 4px 15px rgba(99,102,241,0.4)' },
+  logoutBtn: { background: 'linear-gradient(135deg, #f5576c, #f093fb)', color: '#fff', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 },
   main: { flex: 1, padding: '40px' },
-  pageTitle: { fontSize: '26px', fontWeight: 'bold', color: '#1e1b4b', marginBottom: '30px' },
+  pageTitle: { fontSize: '26px', fontWeight: '600', color: '#fff', marginBottom: '30px' },
   statsRow: { display: 'flex', gap: '20px', marginBottom: '30px' },
-  statCard: { flex: 1, padding: '20px', borderRadius: '12px', color: '#fff', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' },
-  statNum: { fontSize: '32px', margin: 0 },
+  statCard: { flex: 1, padding: '20px', borderRadius: '16px', color: '#fff', boxShadow: '0 8px 25px rgba(0,0,0,0.3)' },
+  statNum: { fontSize: '32px', margin: 0, fontWeight: '600' },
   statLabel: { fontSize: '13px', marginTop: '5px', opacity: 0.9 },
   chartsRow: { display: 'flex', gap: '20px', marginBottom: '20px' },
-  chartCard: { flex: 1, backgroundColor: '#fff', borderRadius: '12px', padding: '25px', boxShadow: '0 2px 10px rgba(0,0,0,0.07)' },
-  chartCardFull: { backgroundColor: '#fff', borderRadius: '12px', padding: '25px', boxShadow: '0 2px 10px rgba(0,0,0,0.07)' },
-  chartTitle: { color: '#1e1b4b', marginBottom: '20px', fontSize: '16px', fontWeight: 'bold' },
-  empty: { color: '#999', textAlign: 'center', padding: '40px' }
+  chartCard: { ...glass, flex: 1, borderRadius: '16px', padding: '25px', boxShadow: '0 8px 25px rgba(0,0,0,0.25)' },
+  chartCardFull: { ...glass, borderRadius: '16px', padding: '25px', boxShadow: '0 8px 25px rgba(0,0,0,0.25)' },
+  chartTitle: { color: '#fff', marginBottom: '20px', fontSize: '16px', fontWeight: '600' },
+  empty: { color: '#a0a3c4', textAlign: 'center', padding: '40px' }
 };
 
 export default Analytics;

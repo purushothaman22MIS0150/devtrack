@@ -62,14 +62,14 @@ const Register = () => {
 };
 
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' },
-  box: { backgroundColor: '#fff', padding: '40px', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', width: '360px' },
-  title: { textAlign: 'center', color: '#4f46e5', marginBottom: '5px' },
-  subtitle: { textAlign: 'center', color: '#666', marginBottom: '20px' },
-  input: { width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', boxSizing: 'border-box' },
-  button: { width: '100%', padding: '10px', backgroundColor: '#4f46e5', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '16px', cursor: 'pointer' },
-  error: { color: 'red', marginBottom: '10px', textAlign: 'center' },
-  link: { textAlign: 'center', marginTop: '15px', fontSize: '14px' }
+  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '20px', fontFamily: 'Poppins, sans-serif' },
+  box: { backgroundColor: 'rgba(255, 255, 255, 0.07)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.15)', padding: '40px', borderRadius: '20px', boxShadow: '0 12px 40px rgba(0,0,0,0.4)', width: '100%', maxWidth: '380px' },
+  title: { textAlign: 'center', color: '#fff', marginBottom: '5px', fontWeight: '600' },
+  subtitle: { textAlign: 'center', color: '#a0a3c4', marginBottom: '25px' },
+  input: { width: '100%', padding: '12px', marginBottom: '15px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: '14px', boxSizing: 'border-box', outline: 'none' },
+  button: { width: '100%', padding: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '16px', fontWeight: 500, cursor: 'pointer', boxShadow: '0 4px 15px rgba(99,102,241,0.4)' },
+  error: { color: '#fca5a5', marginBottom: '10px', textAlign: 'center' },
+  link: { textAlign: 'center', marginTop: '15px', fontSize: '14px', color: '#a0a3c4' }
 };
 
 export default Register;

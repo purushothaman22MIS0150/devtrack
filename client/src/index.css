@@ -1,13 +1,50 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #1a1a3e, #24243e);
+  background-attachment: fixed;
+  color: #e8e8f0;
+  min-height: 100vh;
+}
+
+button, input, textarea, select {
+  font-family: 'Poppins', sans-serif;
+}
+/* Hover effects for buttons and clickable items */
+button,
+[style*="cursor: pointer"] {
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover,
+[style*="cursor: pointer"]:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Page fade-in transition */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#root > div {
+  animation: pageFadeIn 0.45s ease;
 }
