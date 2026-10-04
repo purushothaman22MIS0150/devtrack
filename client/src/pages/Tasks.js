@@ -80,7 +80,6 @@ const Tasks = () => {
           <p style={{ ...styles.navItem, ...styles.activeNav }}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
           <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
-          <p style={styles.navItem} onClick={() => navigate('/ai-summary')}>🤖 AI Summary</p>
         </nav>
         <button style={styles.logoutBtn} onClick={() => { localStorage.clear(); navigate('/login'); }}>🚪 Logout</button>
       </div>

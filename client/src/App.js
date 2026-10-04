@@ -8,7 +8,6 @@ import Projects from './pages/Projects';
 import Tasks from './pages/Tasks';
 import TimeLogs from './pages/TimeLogs';
 import Analytics from './pages/Analytics';
-import AISummary from './pages/AISummary';
 
 const App = () => {
   const { user } = useContext(AuthContext);
@@ -24,7 +23,6 @@ const App = () => {
         <Route path="/projects/:projectId/tasks" element={user ? <Tasks /> : <Navigate to="/login" />} />
         <Route path="/timelogs" element={user ? <TimeLogs /> : <Navigate to="/login" />} />
         <Route path="/analytics" element={user ? <Analytics /> : <Navigate to="/login" />} />
-        <Route path="/ai-summary" element={user ? <AISummary /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
