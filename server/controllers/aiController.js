@@ -66,9 +66,9 @@ Keep it friendly, concise and motivating.
     const summary = completion.choices[0].message.content;
     res.json({ summary, stats: { totalHours, completedTasks, totalTasks: tasks.length, sessions: logs.length } });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to generate summary' });
+    } catch (err) {
+    console.error('AI Error:', err.message, err.status, err.error);
+    res.status(500).json({ message: 'Failed to generate summary', error: err.message });
   }
 };
 
