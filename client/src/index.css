@@ -74,3 +74,80 @@ button:active {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  /* Layout: sidebar goes on top */
+  div:has(> [style*="width: 240px"]) {
+    flex-direction: column !important;
+  }
+
+  [style*="width: 240px"] {
+    width: 100% !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px !important;
+    border-right: none !important;
+  }
+
+  [style*="width: 240px"] h2 {
+    margin: 0 !important;
+    font-size: 18px !important;
+  }
+
+  [style*="width: 240px"] nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+    order: 3;
+  }
+
+  [style*="width: 240px"] nav p {
+    margin: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+
+  [style*="width: 240px"] button {
+    margin-left: auto;
+  }
+
+  /* Page content */
+  [style*="padding: 40px"] {
+    padding: 16px !important;
+  }
+
+  /* Rows of cards stack vertically */
+  [style*="gap: 20px"] {
+    flex-direction: column !important;
+  }
+
+  [style*="gap: 20px"] > * {
+    width: 100% !important;
+  }
+
+  /* Top bar and forms */
+  [style*="justify-content: space-between"][style*="margin-bottom: 30px"] {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  [style*="gap: 10px"][style*="display: flex"] {
+    flex-wrap: wrap;
+  }
+
+  /* Big timer text */
+  [style*="font-size: 64px"] {
+    font-size: 40px !important;
+    letter-spacing: 2px !important;
+  }
+
+  /* Tables scroll sideways instead of breaking the page */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
