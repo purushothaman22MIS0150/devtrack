@@ -8,6 +8,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const timeLogRoutes = require('./routes/timeLogRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const searchRoutes = require('./routes/searchRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 const { checkDeadlines } = require('./controllers/emailController');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/projects', taskRoutes);
 app.use('/api/timelogs', timeLogRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Test route
 app.get('/', (req, res) => {

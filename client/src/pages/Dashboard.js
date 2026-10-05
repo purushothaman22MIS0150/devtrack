@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
+import NotificationBell from '../components/NotificationBell';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -101,7 +102,8 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div style={styles.main}>
-        <div style={styles.header}>
+                <div style={{ ...styles.header, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0 }}><NotificationBell /></div>
           <h1 style={styles.welcome}>Welcome back, {user?.name} 👋</h1>
           <p style={styles.date}>{new Date().toDateString()}</p>
                     <button style={{ marginTop: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={exportPdf}>📄 Export Weekly Summary</button>
