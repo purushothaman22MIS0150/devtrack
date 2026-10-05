@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://devtrack-server-glqf.onrender.com/api',
+        baseURL: 'https://devtrack-server-glqf.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {

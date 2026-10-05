@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -79,6 +80,17 @@ const Dashboard = () => {
       alert('Could not create the PDF');
     }
   };
+    const sendReminder = async () => {
+    setSending(true);
+    try {
+      const res = await api.post('/email/remind-now');
+      alert(res.data.message);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Could not send the reminder');
+    } finally {
+      setSending(false);
+    }
+  };
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -107,6 +119,7 @@ const Dashboard = () => {
           <h1 style={styles.welcome}>Welcome back, {user?.name} 👋</h1>
           <p style={styles.date}>{new Date().toDateString()}</p>
                     <button style={{ marginTop: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={exportPdf}>📄 Export Weekly Summary</button>
+                              <button style={{ marginTop: '12px', marginLeft: '10px', background: 'linear-gradient(135deg, #f5576c, #f093fb)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={sendReminder} disabled={sending}>{sending ? 'Sending...' : '📧 Email Me Reminders'}</button>
         </div>
 
         {/* Stats Cards */}
