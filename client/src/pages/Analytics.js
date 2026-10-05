@@ -82,6 +82,7 @@ const Analytics = () => {
           <p style={styles.navItem} onClick={() => navigate('/projects')}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
           <p style={{ ...styles.navItem, ...styles.activeNav }}>📊 Analytics</p>
+                    <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
         </nav>
         <button style={styles.logoutBtn} onClick={() => { localStorage.clear(); navigate('/login'); }}>🚪 Logout</button>
       </div>

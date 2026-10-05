@@ -46,6 +46,7 @@ const Dashboard = () => {
           <p style={styles.navItem} onClick={() => navigate('/projects')}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
           <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
+                    <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
         </nav>
         <button style={styles.logoutBtn} onClick={handleLogout}>🚪 Logout</button>
       </div>

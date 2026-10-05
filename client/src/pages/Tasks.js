@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
+import PomodoroTimer from '../components/PomodoroTimer';
 
 const Tasks = () => {
   const { projectId } = useParams();
@@ -84,6 +85,7 @@ const Tasks = () => {
           <p style={{ ...styles.navItem, ...styles.activeNav }}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
           <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
+                    <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
         </nav>
         <button style={styles.logoutBtn} onClick={() => { localStorage.clear(); navigate('/login'); }}>🚪 Logout</button>
       </div>
@@ -138,6 +140,7 @@ const Tasks = () => {
                   </div>
                   <p style={styles.taskDesc}>{task.description}</p>
                   {task.deadline && <p style={styles.taskDeadline}>📅 {new Date(task.deadline).toDateString()}</p>}
+                                                      {col === 'In Progress' && <PomodoroTimer taskId={task.id} />}
                   <div style={styles.taskActions}>
                     {col !== 'To Do' && <button style={styles.moveBtn} onClick={() => handleStatusChange(task, col === 'In Progress' ? 'To Do' : 'In Progress')}>← Back</button>}
                     {col !== 'Done' && <button style={styles.moveBtn} onClick={() => handleStatusChange(task, col === 'To Do' ? 'In Progress' : 'Done')}>Next →</button>}

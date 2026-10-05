@@ -128,6 +128,7 @@ const TimeLogs = () => {
           <p style={styles.navItem} onClick={() => navigate('/projects')}>✅ Tasks</p>
           <p style={{ ...styles.navItem, ...styles.activeNav }}>⏱ Time Logs</p>
           <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
+                    <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
         </nav>
         <button style={styles.logoutBtn} onClick={() => { logout(); navigate('/login'); }}>🚪 Logout</button>
       </div>

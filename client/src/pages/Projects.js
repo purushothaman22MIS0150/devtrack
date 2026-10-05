@@ -27,7 +27,8 @@ const Projects = () => {
           const t = await api.get(`/projects/${p.id}/tasks`);
           const total = t.data.length;
           const done = t.data.filter(x => x.status === 'Done').length;
-          progressMap[p.id] = total === 0 ? 0 : Math.round((done / total) * 100);
+                    const inProgress = t.data.filter(x => x.status === 'In Progress').length;
+                    progressMap[p.id] = total === 0 ? 0 : Math.round(((done + inProgress * 0.5) / total) * 100);
         } catch (e) {
           progressMap[p.id] = 0;
         }
@@ -73,6 +74,8 @@ const Projects = () => {
           <p style={{ ...styles.navItem, ...styles.activeNav }}>📁 Projects</p>
           <p style={styles.navItem} onClick={() => navigate('/projects')}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
+                    <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
+          <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
         </nav>
         <button style={styles.logoutBtn} onClick={() => { localStorage.clear(); navigate('/login'); }}>🚪 Logout</button>
       </div>
