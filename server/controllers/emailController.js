@@ -1,14 +1,31 @@
 const pool = require('../config/db');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+// Sends one email through Brevo's HTTPS API (works on free Render, unlike SMTP)
+const sendMail = async ({ to, subject, html }) => {
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': process.env.BREVO_API_KEY,
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: 'DevTrack', email: process.env.SENDER_EMAIL },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+    signal: AbortSignal.timeout(15000),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Brevo API error ${response.status}: ${errorText}`);
+  }
+};
 
 const checkDeadlines = async () => {
   try {
@@ -22,8 +39,7 @@ const checkDeadlines = async () => {
     );
 
     for (const task of result.rows) {
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
+      await sendMail({
         to: task.email,
         subject: `⚠️ Task Due Tomorrow: ${task.title}`,
         html: `
@@ -41,13 +57,11 @@ const checkDeadlines = async () => {
                 <p style="color: #666; margin: 5px 0 0 0;">📅 Due: ${new Date(task.deadline).toDateString()}</p>
               </div>
               <p style="color: #666;">Make sure to complete it on time. You got this! 💪</p>
-              <a href="http://localhost:3000/projects" style="display: inline-block; background: #4f46e5; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px;">View Task →</a>
+              <a href="${FRONTEND_URL}/projects" style="display: inline-block; background: #4f46e5; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px;">View Task →</a>
             </div>
           </div>
-        `
-      };
-
-      await transporter.sendMail(mailOptions);
+        `,
+      });
       console.log(`Deadline reminder sent to ${task.email} for task: ${task.title}`);
     }
   } catch (err) {
@@ -57,8 +71,7 @@ const checkDeadlines = async () => {
 
 const sendTestEmail = async (req, res) => {
   try {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
+    await sendMail({
       to: req.body.email,
       subject: '✅ DevTrack Email Test',
       html: `
@@ -68,9 +81,8 @@ const sendTestEmail = async (req, res) => {
             <p style="color: #a5b4fc;">Email notifications are working!</p>
           </div>
         </div>
-      `
-    };
-    await transporter.sendMail(mailOptions);
+      `,
+    });
     res.json({ message: 'Test email sent successfully!' });
   } catch (err) {
     console.error(err);
@@ -102,8 +114,7 @@ const sendReminderNow = async (req, res) => {
       .map(t => `<li><strong>${t.title}</strong> (${t.project_title}) - due ${new Date(t.deadline).toDateString()}</li>`)
       .join('');
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await sendMail({
       to: email,
       subject: `⏰ DevTrack: ${result.rows.length} task(s) due soon`,
       html: `
@@ -118,7 +129,7 @@ const sendReminderNow = async (req, res) => {
             <ul style="color: #444; line-height: 1.8;">${rows}</ul>
           </div>
         </div>
-      `
+      `,
     });
 
     res.json({ message: `Reminder sent to ${email}` });
