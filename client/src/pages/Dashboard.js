@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -30,6 +32,52 @@ const Dashboard = () => {
     }
   };
 
+    const exportPdf = async () => {
+    try {
+      const doc = new jsPDF();
+      const since = new Date();
+      since.setDate(since.getDate() - 7);
+      since.setHours(0, 0, 0, 0);
+
+      const logsRes = await api.get('/timelogs');
+      const weekLogs = logsRes.data.filter(l => new Date(l.log_date) >= since);
+      const totalHours = weekLogs.reduce((sum, l) => sum + parseFloat(l.hours), 0);
+
+      const taskRows = await Promise.all(projects.map(async (p) => {
+        const t = await api.get(`/projects/${p.id}/tasks`);
+        const tasks = t.data;
+        return [
+          p.title,
+          tasks.filter(x => x.status === 'To Do').length,
+          tasks.filter(x => x.status === 'In Progress').length,
+          tasks.filter(x => x.status === 'Done').length
+        ];
+      }));
+
+      doc.setFontSize(18);
+      doc.text('DevTrack Weekly Summary', 14, 20);
+      doc.setFontSize(11);
+      doc.text(`Generated: ${new Date().toDateString()}`, 14, 28);
+      doc.text(`Hours logged in the last 7 days: ${totalHours.toFixed(2)}`, 14, 36);
+
+      autoTable(doc, {
+        startY: 44,
+        head: [['Task', 'Project', 'Date', 'Hours']],
+        body: weekLogs.map(l => [l.task_title, l.project_title, new Date(l.log_date).toDateString(), l.hours])
+      });
+
+      autoTable(doc, {
+        startY: doc.lastAutoTable.finalY + 12,
+        head: [['Project', 'To Do', 'In Progress', 'Done']],
+        body: taskRows
+      });
+
+      doc.save('weekly-summary.pdf');
+    } catch (err) {
+      console.error(err);
+      alert('Could not create the PDF');
+    }
+  };
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -56,6 +104,7 @@ const Dashboard = () => {
         <div style={styles.header}>
           <h1 style={styles.welcome}>Welcome back, {user?.name} 👋</h1>
           <p style={styles.date}>{new Date().toDateString()}</p>
+                    <button style={{ marginTop: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={exportPdf}>📄 Export Weekly Summary</button>
         </div>
 
         {/* Stats Cards */}

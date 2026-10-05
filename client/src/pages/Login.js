@@ -17,7 +17,7 @@ const Login = () => {
       login(res.data.user, res.data.token);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid email or password');
+            setError(err.response?.data?.message || 'Cannot reach server');
     }
   };
 
