@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
 import NotificationBell from '../components/NotificationBell';
+import AIHub from '../components/AIHub';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -249,6 +250,9 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+
+        {/* AI Assistant Hub */}
+        <AIHub />
 
         {/* Recent Projects */}
         <div style={styles.section}>
