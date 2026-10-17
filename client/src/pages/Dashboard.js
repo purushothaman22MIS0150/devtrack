@@ -18,6 +18,8 @@ const Dashboard = () => {
   const [aiStats, setAiStats] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [topTasks, setTopTasks] = useState(null);
+  const [topLoading, setTopLoading] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -108,6 +110,18 @@ const Dashboard = () => {
       setAiSummary('Failed to generate summary. Please try again.');
     }
     setAiLoading(false);
+  };
+
+  const handleTopTasks = async () => {
+    setTopLoading(true);
+    try {
+      const res = await api.get('/ai/priorities');
+      setTopTasks(res.data.top);
+    } catch (err) {
+      setTopTasks([]);
+      alert('Could not get priorities. Please try again.');
+    }
+    setTopLoading(false);
   };
 
   const handleLogout = () => {
@@ -201,6 +215,36 @@ const Dashboard = () => {
                     </p>
                   ))}
                 </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* AI Priority Advisor Widget */}
+        <div style={styles.aiWidget}>
+          <div style={styles.aiHeader}>
+            <div>
+              <h2 style={styles.aiTitle}>🎯 Today's Top 3</h2>
+              <p style={styles.aiSubtitle}>AI picks the tasks you should do first</p>
+            </div>
+            <button style={styles.aiBtn} onClick={handleTopTasks} disabled={topLoading}>
+              {topLoading ? '⏳ Thinking...' : '✨ Get Priorities'}
+            </button>
+          </div>
+
+          {topTasks && (
+            <div style={styles.aiContent}>
+              {topTasks.length === 0 ? (
+                <p style={styles.aiText}>No pending tasks. Nice work!</p>
+              ) : (
+                topTasks.map((t, i) => (
+                  <div key={i} style={{ ...styles.aiReport, marginBottom: '10px' }}>
+                    <p style={styles.aiHeading}>
+                      {i + 1}. {t.title} <span style={{ color: '#a0a3c4', fontWeight: 'normal' }}>({t.project})</span>
+                    </p>
+                    <p style={styles.aiText}>{t.reason}</p>
+                  </div>
+                ))
               )}
             </div>
           )}
