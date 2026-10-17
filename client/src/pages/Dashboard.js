@@ -13,7 +13,11 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
-    const [sending, setSending] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [aiSummary, setAiSummary] = useState('');
+  const [aiStats, setAiStats] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [showAI, setShowAI] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -27,14 +31,14 @@ const Dashboard = () => {
       const active = res.data.filter(p => p.status === 'Active').length;
       const completed = res.data.filter(p => p.status === 'Completed').length;
       setStats({ total, active, completed });
-       } catch (err) {
+    } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-    const exportPdf = async () => {
+  const exportPdf = async () => {
     try {
       const doc = new jsPDF();
       const since = new Date();
@@ -80,7 +84,8 @@ const Dashboard = () => {
       alert('Could not create the PDF');
     }
   };
-    const sendReminder = async () => {
+
+  const sendReminder = async () => {
     setSending(true);
     try {
       const res = await api.post('/email/remind-now');
@@ -91,6 +96,20 @@ const Dashboard = () => {
       setSending(false);
     }
   };
+
+  const handleGenerateAI = async () => {
+    setAiLoading(true);
+    setShowAI(true);
+    try {
+      const res = await api.get('/ai/weekly-summary');
+      setAiSummary(res.data.summary);
+      setAiStats(res.data.stats);
+    } catch (err) {
+      setAiSummary('Failed to generate summary. Please try again.');
+    }
+    setAiLoading(false);
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -107,19 +126,19 @@ const Dashboard = () => {
           <p style={styles.navItem} onClick={() => navigate('/projects')}>✅ Tasks</p>
           <p style={styles.navItem} onClick={() => navigate('/timelogs')}>⏱ Time Logs</p>
           <p style={styles.navItem} onClick={() => navigate('/analytics')}>📊 Analytics</p>
-                    <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
+          <p style={styles.navItem} onClick={() => navigate('/profile')}>👤 Profile</p>
         </nav>
         <button style={styles.logoutBtn} onClick={handleLogout}>🚪 Logout</button>
       </div>
 
       {/* Main Content */}
       <div style={styles.main}>
-                <div style={{ ...styles.header, position: 'relative' }}>
+        <div style={{ ...styles.header, position: 'relative' }}>
           <div style={{ position: 'absolute', top: 0, right: 0 }}><NotificationBell /></div>
           <h1 style={styles.welcome}>Welcome back, {user?.name} 👋</h1>
           <p style={styles.date}>{new Date().toDateString()}</p>
-                    <button style={{ marginTop: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={exportPdf}>📄 Export Weekly Summary</button>
-                              <button style={{ marginTop: '12px', marginLeft: '10px', background: 'linear-gradient(135deg, #f5576c, #f093fb)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={sendReminder} disabled={sending}>{sending ? 'Sending...' : '📧 Email Me Reminders'}</button>
+          <button style={{ marginTop: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={exportPdf}>📄 Export Weekly Summary</button>
+          <button style={{ marginTop: '12px', marginLeft: '10px', background: 'linear-gradient(135deg, #f5576c, #f093fb)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }} onClick={sendReminder} disabled={sending}>{sending ? 'Sending...' : '📧 Email Me Reminders'}</button>
         </div>
 
         {/* Stats Cards */}
@@ -138,10 +157,59 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* AI Weekly Summary Widget */}
+        <div style={styles.aiWidget}>
+          <div style={styles.aiHeader}>
+            <div>
+              <h2 style={styles.aiTitle}>🤖 AI Weekly Summary</h2>
+              <p style={styles.aiSubtitle}>Get an AI-powered analysis of your productivity this week</p>
+            </div>
+            <button style={styles.aiBtn} onClick={handleGenerateAI} disabled={aiLoading}>
+              {aiLoading ? '⏳ Generating...' : '✨ Generate Summary'}
+            </button>
+          </div>
+
+          {showAI && (
+            <div style={styles.aiContent}>
+              {aiStats && (
+                <div style={styles.aiStatsRow}>
+                  <div style={{ ...styles.aiStatCard, background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+                    <h3 style={styles.aiStatNum}>{aiStats.totalTasks}</h3>
+                    <p style={styles.aiStatLabel}>Tasks This Week</p>
+                  </div>
+                  <div style={{ ...styles.aiStatCard, background: 'linear-gradient(135deg, #f093fb, #f5576c)' }}>
+                    <h3 style={styles.aiStatNum}>{aiStats.completedTasks}</h3>
+                    <p style={styles.aiStatLabel}>Completed</p>
+                  </div>
+                  <div style={{ ...styles.aiStatCard, background: 'linear-gradient(135deg, #4facfe, #00f2fe)' }}>
+                    <h3 style={styles.aiStatNum}>{aiStats.totalHours}h</h3>
+                    <p style={styles.aiStatLabel}>Hours Logged</p>
+                  </div>
+                  <div style={{ ...styles.aiStatCard, background: 'linear-gradient(135deg, #43e97b, #38f9d7)' }}>
+                    <h3 style={styles.aiStatNum}>{aiStats.sessions}</h3>
+                    <p style={styles.aiStatLabel}>Work Sessions</p>
+                  </div>
+                </div>
+              )}
+              {aiLoading ? (
+                <p style={styles.aiLoading}>🤖 Analyzing your productivity data...</p>
+              ) : (
+                <div style={styles.aiReport}>
+                  {aiSummary.split('\n').map((line, i) => (
+                    <p key={i} style={line.startsWith('#') || /^\d\./.test(line) ? styles.aiHeading : styles.aiText}>
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Recent Projects */}
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>Recent Projects</h2>
-                    {loading ? (
+          {loading ? (
             <Spinner text="Loading projects..." />
           ) : projects.length === 0 ? (
             <p style={styles.empty}>No projects yet. <span style={styles.link} onClick={() => navigate('/projects')}>Create one!</span></p>
@@ -182,10 +250,24 @@ const styles = {
   header: { marginBottom: '30px' },
   welcome: { fontSize: '28px', fontWeight: '600', color: '#fff' },
   date: { color: '#a0a3c4', marginTop: '5px' },
-  statsRow: { display: 'flex', gap: '20px', marginBottom: '40px' },
+  statsRow: { display: 'flex', gap: '20px', marginBottom: '30px' },
   card: { flex: 1, padding: '25px', borderRadius: '16px', color: '#fff', boxShadow: '0 8px 25px rgba(0,0,0,0.3)' },
   cardNum: { fontSize: '36px', margin: 0, fontWeight: '600' },
   cardLabel: { fontSize: '14px', marginTop: '5px', opacity: 0.9 },
+  aiWidget: { ...glass, borderRadius: '16px', padding: '25px', marginBottom: '30px', boxShadow: '0 8px 25px rgba(0,0,0,0.25)' },
+  aiHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' },
+  aiTitle: { color: '#fff', fontSize: '18px', fontWeight: '600', margin: 0 },
+  aiSubtitle: { color: '#a0a3c4', fontSize: '13px', marginTop: '4px' },
+  aiBtn: { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 500 },
+  aiContent: { borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', marginTop: '10px' },
+  aiStatsRow: { display: 'flex', gap: '15px', marginBottom: '20px' },
+  aiStatCard: { flex: 1, padding: '15px', borderRadius: '10px', color: '#fff' },
+  aiStatNum: { fontSize: '24px', margin: 0, fontWeight: '600' },
+  aiStatLabel: { fontSize: '12px', marginTop: '4px', opacity: 0.9 },
+  aiLoading: { color: '#a5b4fc', textAlign: 'center', padding: '20px', fontSize: '15px' },
+  aiReport: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '20px' },
+  aiHeading: { color: '#a5b4fc', fontWeight: 'bold', fontSize: '14px', marginTop: '12px' },
+  aiText: { color: '#e2e8f0', fontSize: '14px', margin: '4px 0', lineHeight: '1.6' },
   section: { ...glass, borderRadius: '16px', padding: '25px', boxShadow: '0 8px 25px rgba(0,0,0,0.25)' },
   sectionTitle: { fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '20px' },
   empty: { color: '#a0a3c4', textAlign: 'center', padding: '20px' },
