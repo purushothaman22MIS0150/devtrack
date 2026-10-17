@@ -149,5 +149,37 @@ Return ONLY JSON like {"summary": "your text"}`;
     res.status(500).json({ message: 'Server error' });
   }
 };
+// GET /api/ai/priorities
+const priorityAdvice = async (req, res) => {
+  try {
+    const tasks = await pool.query(
+      `SELECT t.title, t.status, t.priority, t.deadline, p.title AS project
+       FROM tasks t
+       JOIN projects p ON t.project_id = p.id
+       WHERE p.user_id = $1`,
+      [req.user.id]
+    );
 
-module.exports = { suggestTasks, weeklySummary };
+    const today = new Date().toISOString().split('T')[0];
+    const prompt = `You are a productivity coach. Today is ${today}.
+Here are a developer's tasks as JSON:
+${JSON.stringify(tasks.rows)}
+
+Ignore completed tasks. Pick the 3 most important tasks to do first, considering deadlines and priority.
+Return ONLY JSON like:
+{"top": [{"title": "task title", "project": "project name", "reason": "one short sentence"}]}`;
+
+    const data = await callGemini(prompt);
+    if (!data) {
+      return res.status(502).json({ message: 'AI is busy right now. Try again in a minute.' });
+    }
+
+    const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+    res.json({ top: Array.isArray(parsed.top) ? parsed.top.slice(0, 3) : [] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+module.exports = { suggestTasks, weeklySummary, priorityAdvice };
