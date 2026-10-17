@@ -204,6 +204,7 @@ const Tasks = () => {
         {showForm && (
           <div style={styles.formCard}>
             <h3 style={styles.formTitle}>Create New Task</h3>
+
             <form onSubmit={handleCreate}>
               <input style={styles.input} type="text" placeholder="Task Title" value={title} onChange={e => setTitle(e.target.value)} required />
               <textarea style={styles.textarea} placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
