@@ -9,6 +9,7 @@ const timeLogRoutes = require('./routes/timeLogRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const { checkDeadlines, sendReminderNow } = require('./controllers/emailController');
 const auth = require('./middleware/auth');
 
@@ -26,6 +27,7 @@ app.use('/api/email', emailRoutes);
 app.post('/api/email/remind-now', auth, sendReminderNow);
 app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Test route
 app.get('/', (req, res) => {

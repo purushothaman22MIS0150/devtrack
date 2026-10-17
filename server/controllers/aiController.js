@@ -110,4 +110,44 @@ Return ONLY a JSON array. Each item must have exactly these keys:
   }
 };
 
-module.exports = { suggestTasks };
+// GET /api/ai/weekly-summary
+const weeklySummary = async (req, res) => {
+  try {
+    const tasks = await pool.query(
+      `SELECT t.title, t.status, t.priority, t.deadline
+       FROM tasks t
+       JOIN projects p ON t.project_id = p.id
+       WHERE p.user_id = $1`,
+      [req.user.id]
+    );
+
+    const prompt = `You are a productivity coach. Here are a developer's tasks as JSON:
+${JSON.stringify(tasks.rows)}
+
+Write a short weekly summary in 4 to 5 sentences covering progress, overdue or high-priority items, and one tip for next week.
+Return ONLY JSON like {"summary": "your text"}`;
+
+    const data = await callGemini(prompt);
+    if (!data) {
+      return res.status(502).json({ message: 'AI is busy right now. Try again in a minute.' });
+    }
+
+    const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch (e) {
+      console.error('Could not parse Gemini output:', text);
+      return res.status(502).json({ message: 'AI returned an unreadable answer. Try again.' });
+    }
+
+    res.json({ summary: parsed.summary || clean });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { suggestTasks, weeklySummary };
