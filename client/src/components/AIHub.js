@@ -4,6 +4,7 @@ import api from '../utils/api';
 const TABS = [
   { id: 'ask', label: '💬 Ask DevTrack' },
   { id: 'standup', label: '🗣 Daily Standup' },
+  { id: 'planner', label: '📅 Weekly Planner' },
 ];
 
 const AIHub = () => {
@@ -14,6 +15,7 @@ const AIHub = () => {
   const [question, setQuestion] = useState('');
   const [chat, setChat] = useState([]);
   const [standup, setStandup] = useState(null);
+  const [plan, setPlan] = useState(null);
   const [copied, setCopied] = useState(false);
 
   const getLogs = async () => {
@@ -57,6 +59,14 @@ const AIHub = () => {
     });
   };
 
+  const handlePlanner = () => {
+    run(async () => {
+      const logs = await getLogs();
+      const res = await api.post('/ai/planner', { logs });
+      setPlan(res.data.plan);
+    });
+  };
+
   const copyStandup = async () => {
     if (!standup) return;
     const text = `Yesterday: ${standup.yesterday}\nToday: ${standup.today}\nBlockers: ${standup.blockers}`;
@@ -71,7 +81,7 @@ const AIHub = () => {
   return (
     <div style={styles.widget}>
       <h2 style={styles.title}>🧠 AI Assistant</h2>
-      <p style={styles.subtitle}>Ask questions about your work and get a ready-made standup</p>
+      <p style={styles.subtitle}>Ask questions, get a standup and plan your week</p>
 
       <div style={styles.tabs}>
         {TABS.map(t => (
@@ -136,6 +146,24 @@ const AIHub = () => {
           </div>
         )}
 
+        {tab === 'planner' && (
+          <div>
+            <button style={styles.btn} onClick={handlePlanner} disabled={loading}>
+              {loading ? '⏳ Planning...' : '✨ Plan my week'}
+            </button>
+            {plan && plan.length === 0 && <p style={styles.hint}>No pending tasks to plan.</p>}
+            {plan && plan.map((d, i) => (
+              <div key={i} style={styles.card}>
+                <p style={styles.label}>{d.day}</p>
+                <p style={styles.text}>{d.focus}</p>
+                <ul style={styles.list}>
+                  {d.tasks.map((t, j) => <li key={j} style={styles.text}>{t}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
         {error && <p style={styles.error}>{error}</p>}
       </div>
     </div>
@@ -159,6 +187,7 @@ const styles = {
   card: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '15px 18px', marginTop: '12px' },
   label: { color: '#a5b4fc', fontWeight: 'bold', fontSize: '13px', margin: '8px 0 2px 0' },
   text: { color: '#e2e8f0', fontSize: '14px', margin: '2px 0', lineHeight: '1.6' },
+  list: { margin: '6px 0 0 0', paddingLeft: '20px' },
   hint: { color: '#a0a3c4', fontSize: '13px', margin: '8px 0' },
   error: { color: '#fca5a5', fontSize: '13px', marginTop: '12px' },
 };
