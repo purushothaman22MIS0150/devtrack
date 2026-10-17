@@ -5,6 +5,7 @@ const TABS = [
   { id: 'ask', label: '💬 Ask DevTrack' },
   { id: 'standup', label: '🗣 Daily Standup' },
   { id: 'planner', label: '📅 Weekly Planner' },
+  { id: 'insights', label: '📊 Time Insights' },
 ];
 
 const AIHub = () => {
@@ -16,6 +17,7 @@ const AIHub = () => {
   const [chat, setChat] = useState([]);
   const [standup, setStandup] = useState(null);
   const [plan, setPlan] = useState(null);
+  const [insights, setInsights] = useState(null);
   const [copied, setCopied] = useState(false);
 
   const getLogs = async () => {
@@ -67,6 +69,14 @@ const AIHub = () => {
     });
   };
 
+  const handleInsights = () => {
+    run(async () => {
+      const logs = await getLogs();
+      const res = await api.post('/ai/insights', { logs });
+      setInsights(res.data.insights);
+    });
+  };
+
   const copyStandup = async () => {
     if (!standup) return;
     const text = `Yesterday: ${standup.yesterday}\nToday: ${standup.today}\nBlockers: ${standup.blockers}`;
@@ -81,7 +91,7 @@ const AIHub = () => {
   return (
     <div style={styles.widget}>
       <h2 style={styles.title}>🧠 AI Assistant</h2>
-      <p style={styles.subtitle}>Ask questions, get a standup and plan your week</p>
+      <p style={styles.subtitle}>Ask questions, get a standup, plan your week and understand your time</p>
 
       <div style={styles.tabs}>
         {TABS.map(t => (
@@ -161,6 +171,21 @@ const AIHub = () => {
                 </ul>
               </div>
             ))}
+          </div>
+        )}
+
+        {tab === 'insights' && (
+          <div>
+            <button style={styles.btn} onClick={handleInsights} disabled={loading}>
+              {loading ? '⏳ Analyzing...' : '✨ Analyze my time'}
+            </button>
+            {insights && (
+              <div style={styles.card}>
+                <ul style={styles.list}>
+                  {insights.map((s, i) => <li key={i} style={styles.text}>{s}</li>)}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
